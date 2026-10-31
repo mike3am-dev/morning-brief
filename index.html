@@ -409,6 +409,13 @@ main{max-width:1240px; margin:0 auto; padding:0 var(--gutter) 5rem}
 .workspace{padding:.75rem 0 0 3.25rem; display:flex; flex-direction:column; gap:.6rem}
 .workspace[hidden]{display:none}
 
+/* Sul Duo aperto ogni punto conta: il margine della pagina cresce con la
+   larghezza (4,5%), pensato per il Mac, e qui faceva 44 punti per lato — con
+   il rientro della lista, un centimetro buono di schermo vuoto. Si stringe il
+   margine e non la lista, cosi' testata, schede, lista e pannello restano
+   tutti sulla stessa linea verticale. */
+@media (min-width:601px) and (max-width:1039px){ :root{--gutter:1.25rem} }
+
 /* ---------------- Duo aperto ----------------
    Fra il telefono (sotto i 600 punti) e il Mac (dai 1.040) cade lo schermo
    interno di iPhone Duo, in verticale e in orizzontale. Li' la scheda APPLE
@@ -430,7 +437,7 @@ main{max-width:1240px; margin:0 auto; padding:0 var(--gutter) 5rem}
    perche' e' quello che si scorre; il tag scende a testo con il suo pallino
    di colore, invece di una scatola ripetuta quindici volte. Sintesi,
    miniatura e pulsanti stanno nel pannello, dove c'e' spazio per leggerli. */
-#view-oggi.duo .newslist .story{padding:.95rem .25rem .9rem 1rem; cursor:pointer; position:relative}
+#view-oggi.duo .newslist .story{padding:.95rem .25rem .9rem .85rem; cursor:pointer; position:relative}
 #view-oggi.duo .newslist .story-head,
 #view-oggi.duo .newslist .story-head.with-thumb{
   grid-template-columns:24px minmax(0,1fr);
