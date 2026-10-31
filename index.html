@@ -425,32 +425,59 @@ main{max-width:1240px; margin:0 auto; padding:0 var(--gutter) 5rem}
   display:grid; grid-template-columns:minmax(220px, 36%) minmax(0,1fr);
   column-gap:1.5rem; align-items:start;
 }
-/* la lista compatta: numero, tag e titolo. Sintesi, miniatura e pulsanti
-   stanno nel pannello, dove c'e' spazio per leggerli */
-#view-oggi.duo .newslist .story{padding:.8rem .55rem .75rem; cursor:pointer;
-  border-radius:4px; transition:background .15s}
-#view-oggi.duo .newslist .story:first-of-type{border-top:1.5px solid var(--ink); border-radius:0 0 4px 4px}
+/* La lista e' un indice, non una pila di schede: pallino in colonna, titolo
+   accanto a filo, e sotto una riga di meta silenziosa. Il titolo viene prima
+   perche' e' quello che si scorre; il tag scende a testo con il suo pallino
+   di colore, invece di una scatola ripetuta quindici volte. Sintesi,
+   miniatura e pulsanti stanno nel pannello, dove c'e' spazio per leggerli. */
+#view-oggi.duo .newslist .story{padding:.95rem .25rem .9rem 1rem; cursor:pointer; position:relative}
 #view-oggi.duo .newslist .story-head,
 #view-oggi.duo .newslist .story-head.with-thumb{
-  grid-template-columns:auto minmax(0,1fr);
-  grid-template-areas:"bead chips" "title title";
-  column-gap:.5rem;
+  grid-template-columns:24px minmax(0,1fr);
+  grid-template-areas:"bead title" ". chips";
+  column-gap:.7rem; row-gap:.4rem;
 }
-#view-oggi.duo .newslist .story-head .bead{align-self:center}
-#view-oggi.duo .newslist .bead{width:22px; height:22px; font-size:.72rem; margin-top:0}
+#view-oggi.duo .newslist .story-head .bead{align-self:start}
+#view-oggi.duo .newslist .bead{width:24px; height:24px; font-size:.74rem; margin-top:.02rem}
 #view-oggi.duo .newslist .story-head .lede,
 #view-oggi.duo .newslist .story-head .thumb,
 #view-oggi.duo .newslist .tools,
 #view-oggi.duo .newslist .workspace{display:none}
-#view-oggi.duo .newslist .chips{margin-bottom:.35rem; gap:.25rem .35rem}
-/* nella colonna stretta tag e "approfondita" devono stare su un rigo */
-#view-oggi.duo .newslist .chip{font-size:.54rem; letter-spacing:.06em; padding:.16rem .36rem}
-#view-oggi.duo .newslist .story h3{font-size:1.08rem; line-height:1.18; margin:0}
-#view-oggi.duo .newslist .story:hover{background:var(--paper)}
-/* quella che stai leggendo: campita, con il filo del suo colore a sinistra */
-#view-oggi.duo .newslist .story.is-reading{background:var(--paper);
-  box-shadow:inset 3px 0 0 var(--ink)}
-#view-oggi.duo .newslist .story.is-reading .bead{transform:none}
+/* il titolo: Medium, non Demi. Il grassetto resta a quella che stai leggendo */
+/* text-wrap:pretty e non balance: in un indice stretto il bilanciamento
+   accorcia le righe e lascia il margine destro frastagliato */
+#view-oggi.duo .newslist .story h3{font-weight:500; font-size:1.07rem; line-height:1.24;
+  letter-spacing:0; margin:0; color:var(--ink); transition:color .15s; text-wrap:pretty}
+#view-oggi.duo .newslist .story.is-read:not(.is-reading) h3{color:var(--ink-2)}
+#view-oggi.duo .newslist .story:hover h3{color:var(--ink)}
+/* la riga di meta: maiuscoletto, pallino del colore del tag, niente scatole */
+#view-oggi.duo .newslist .chips{margin:0; gap:.2rem .7rem}
+#view-oggi.duo .newslist .chip{background:none; box-shadow:none; padding:0; color:var(--ink-3);
+  font-size:.56rem; letter-spacing:.13em; display:inline-flex; align-items:center; gap:.38rem}
+#view-oggi.duo .newslist .chip[class*="t-"]::before{content:""; width:7px; height:7px;
+  border-radius:50%; background:var(--tagc, var(--ink-3)); flex:none}
+#view-oggi.duo .newslist .chip.t-rumor{--tagc:var(--yellow)}
+#view-oggi.duo .newslist .chip.t-confermato{--tagc:var(--blue)}
+#view-oggi.duo .newslist .chip.t-dati{--tagc:var(--orange)}
+#view-oggi.duo .newslist .chip.t-analisi,
+#view-oggi.duo .newslist .chip.t-opinione{--tagc:var(--red)}
+#view-oggi.duo .newslist .chip.t-contorno,
+#view-oggi.duo .newslist .chip.t-contesto,
+#view-oggi.duo .newslist .chip.t-servizio{--tagc:var(--ink)}
+/* "approfondita" nella lista e' ridondante — per regola sono le prime cinque —
+   e nella colonna stretta del Duo in verticale mandava la meta su due righe
+   solo per quelle. Nel pannello la pastiglia c'e'. */
+#view-oggi.duo .newslist .chip.deep-mark{display:none}
+#view-oggi.duo .newslist .meter{padding:0}
+/* Quella che stai leggendo si segna come la scheda attiva in testata: la
+   barra arancione di quattro punti, qui in verticale. Niente fondo: in TMB
+   le campiture hanno un ruolo, e "selezionato" non e' fra questi. */
+#view-oggi.duo .newslist .story::before{content:""; position:absolute; left:0; top:.85rem; bottom:.8rem;
+  width:4px; background:var(--orange); transform:scaleY(0); transform-origin:top;
+  transition:transform .18s ease}
+#view-oggi.duo .newslist .story.is-reading::before{transform:scaleY(1)}
+#view-oggi.duo .newslist .story.is-reading h3{font-weight:700; color:var(--ink)}
+#view-oggi.duo .newslist .story.is-reading .bead{transform:none; opacity:1}
 
 /* il pannello: resta agganciato sotto la testata e scorre per conto suo */
 #view-oggi.duo .reader{
@@ -461,7 +488,9 @@ main{max-width:1240px; margin:0 auto; padding:0 var(--gutter) 5rem}
   padding:.9rem 0 2.5rem 1.5rem; border-left:1px solid var(--rule);
 }
 .reader-head{display:flex; flex-direction:column; gap:.6rem; padding-bottom:.2rem}
-.reader-head .eyebrow{margin:0}
+.reader-kicker{display:flex; align-items:center; gap:.6rem}
+.reader-kicker .bead{width:26px; height:26px; font-size:.78rem; margin:0}
+.reader-kicker .eyebrow{margin:0}
 .reader-head .chips{margin:0}
 .reader-head h2{font-family:var(--display); font-weight:600; font-size:clamp(1.55rem, 3.4vw, 2.05rem);
   line-height:1.08; letter-spacing:-.008em; margin:0}
@@ -4167,9 +4196,14 @@ function storyNode(brief, n, index){
      si ridisegna, piu' grande, perche' nella lista resta il titolo. */
   wrap._parts = {body:body, bar:null, panel:null};
   wrap._readerHead = function(){
+    /* l'occhiello riprende il pallino della lista: stesso numero, stesso
+       colore, cosi' si vede a colpo d'occhio quale voce e' aperta a destra */
+    const i0 = typeof index === "number" ? index : (n.rank || 1) - 1;
     return el("header", {class:"reader-head"}, [
-      el("p", {class:"eyebrow", text:"Notizia " + (typeof index === "number" ? index + 1 : (n.rank || "")) +
-                                     " · " + fmtShort(brief.date)}),
+      el("div", {class:"reader-kicker"}, [
+        bead(i0, String(i0 + 1)),
+        el("span", {class:"eyebrow", text:fmtDate(brief.date)})
+      ]),
       chips.childNodes.length ? chips.cloneNode(true) : null,
       el("h2", {text:n.title}),
       (n.hero || n.image) ? el("img", {class:"reader-shot", src:n.hero || n.image, alt:"", decoding:"async"}) : null,
