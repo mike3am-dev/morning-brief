@@ -507,6 +507,11 @@ main{max-width:1240px; margin:0 auto; padding:0 var(--gutter) 5rem}
 .reader .story-body{padding:1rem 0 0}
 .reader .workspace{padding-left:0}
 .reader .tools{padding-left:0}
+/* La barra "Chiudi / Prossima notizia" in fondo all'approfondimento e' fatta
+   per il telefono, dove la lista non si vede. Nel pannello galleggiava sopra
+   il testo, e la prossima notizia si sceglie gia' a sinistra (Mike, 31 ottobre
+   2026). Per chiudere resta il pulsante in cima, "Chiudi approfondimento". */
+.reader .deep-bar{display:none}
 @media (max-width:600px){
   /* Sul telefono la notizia ha un solo bordo a sinistra: numero e metadati in
      cima, poi titolo, sintesi e azioni tutti allineati a filo di colonna. Il
