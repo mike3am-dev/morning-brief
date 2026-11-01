@@ -432,6 +432,12 @@ html.duo-forzato{--gutter:1.25rem}
 #view-oggi.duo .col-main{max-width:none}
 /* la foto d'apertura si sposta nel pannello, con la notizia a cui appartiene */
 #view-oggi.duo .hero-shot{display:none}
+/* L'apertura del telefono (pallini, data, i tre titoli, l'intro) sul Duo
+   si prendeva tutta la prima schermata prima della prima notizia. Qui la
+   rifa' la prima pagina nel pannello: la colonna parte subito con l'indice. */
+#view-oggi.duo .hero,
+#view-oggi.duo .news-head{display:none}
+#view-oggi.duo .newsbox{margin-top:1rem}
 #view-oggi.duo .newsbox{
   display:grid; grid-template-columns:minmax(220px, 36%) minmax(0,1fr);
   column-gap:1.5rem; align-items:start;
@@ -511,6 +517,104 @@ html.duo-forzato{--gutter:1.25rem}
 .reader .story-body{padding:1rem 0 0}
 .reader .workspace{padding-left:0}
 .reader .tools{padding-left:0}
+/* ---------------- la prima pagina del Duo ---------------- */
+.fp-entry{display:none}
+#view-oggi.duo .fp-entry{
+  display:grid; grid-template-columns:24px minmax(0,1fr); column-gap:.7rem; align-items:center;
+  width:100%; margin:0; padding:.95rem .25rem .95rem .85rem; position:relative;
+  background:none; border:0; border-top:1.5px solid var(--ink); border-radius:0;
+  color:inherit; font:inherit; text-align:left; cursor:pointer;
+}
+#view-oggi.duo .fp-entry::before{content:""; position:absolute; left:0; top:.85rem; bottom:.85rem;
+  width:4px; background:var(--orange); transform:scaleY(0); transform-origin:top; transition:transform .18s ease}
+#view-oggi.duo .fp-entry.is-reading::before{transform:scaleY(1)}
+.fp-mark{display:grid; grid-template-columns:repeat(2, 9px); gap:5px; justify-content:center}
+.fp-mark i{width:9px; height:9px; border-radius:50%; background:var(--red)}
+.fp-mark i:nth-child(2){background:var(--yellow)}
+.fp-mark i:nth-child(3){background:var(--blue)}
+.fp-mark i:nth-child(4){background:var(--orange)}
+.fp-entry-t b{display:block; font-family:var(--display); font-weight:700; text-transform:uppercase;
+  font-size:1.12rem; letter-spacing:.03em; line-height:1.05}
+.fp-entry-t .eyebrow{display:block; margin-top:.28rem}
+
+#view-oggi.duo .reader{container-type:inline-size}
+.fp{display:flex; flex-direction:column; gap:1.15rem; padding-top:.15rem}
+
+/* la testata del giorno */
+.fp-head{display:flex; align-items:flex-end; justify-content:space-between; gap:.8rem 1rem; flex-wrap:wrap}
+.fp-when .eyebrow{display:block}
+.fp-date{font-family:var(--display); font-weight:700; text-transform:uppercase;
+  font-size:clamp(2.3rem, 10cqi, 3.5rem); line-height:.88; letter-spacing:-.012em; margin:.3rem 0 0}
+.fp-listen{display:inline-flex; align-items:center; gap:.65rem; flex:none;
+  background:var(--yellow); color:#17181B; border:0; border-radius:999px;
+  padding:.45rem 1.1rem .45rem .45rem; font:inherit; text-align:left; cursor:pointer;
+  transition:transform .15s ease}
+.fp-listen:active{transform:scale(.97)}
+.fp-listen i{width:32px; height:32px; border-radius:50%; background:#17181B; color:var(--yellow);
+  display:grid; place-items:center; font-style:normal; font-size:.78rem; padding-left:2px}
+.fp-listen b{display:block; font-family:var(--display); font-weight:700; text-transform:uppercase;
+  font-size:.98rem; letter-spacing:.03em; line-height:1}
+.fp-listen small{display:block; margin-top:.2rem; font-size:.58rem; font-weight:600;
+  letter-spacing:.12em; text-transform:uppercase; opacity:.7}
+
+/* la fila dei pallini: entrano uno dopo l'altro, come nella sigla */
+.fp-row{display:flex; align-items:center; flex-wrap:wrap; gap:.6rem 1rem;
+  padding:.9rem 0; border-top:1.5px solid var(--ink); border-bottom:1px solid var(--rule)}
+.fp-beads{display:flex; flex-wrap:wrap; gap:6px}
+.fp-bead{background:none; border:0; padding:0; margin:0; cursor:pointer; border-radius:50%;
+  animation:fp-pop .42s cubic-bezier(.2,1.4,.4,1) both; animation-delay:calc(var(--i) * 45ms)}
+.fp-bead .bead{width:30px; height:30px; font-size:.84rem; margin:0}
+.fp-bead.is-read .bead{opacity:.28}
+.fp-bead:active .bead{transform:scale(.9)}
+.fp-count{margin:0}
+@keyframes fp-pop{from{transform:scale(0); opacity:0} to{transform:scale(1); opacity:1}}
+
+/* l'apertura: la foto, e sopra il sottopancia — fascia gialla, titolo su nero */
+.fp-lead{position:relative; margin:0; cursor:pointer; border-radius:3px; overflow:hidden; background:var(--paper-2)}
+.fp-lead img{display:block; width:100%; aspect-ratio:16/9; object-fit:cover}
+.fp-chyron{position:absolute; left:0; bottom:0; max-width:88%;
+  display:flex; flex-direction:column; align-items:flex-start}
+.fp-tag{background:var(--yellow); color:#17181B; font-family:var(--display); font-weight:700;
+  text-transform:uppercase; font-size:.72rem; letter-spacing:.14em; padding:.34rem .75rem .26rem;
+  animation:fp-wipe .38s ease-out .15s both}
+.fp-title{background:#17181B; color:#F8F6F2; font-family:var(--display); font-weight:600;
+  font-size:clamp(1.2rem, 4.8cqi, 1.65rem); line-height:1.1; letter-spacing:-.003em;
+  padding:.55rem .85rem .65rem; text-wrap:balance; animation:fp-wipe .5s ease-out .3s both}
+.fp-lead.no-img{background:none; overflow:visible}
+.fp-lead.no-img .fp-chyron{position:static; max-width:none}
+@keyframes fp-wipe{from{clip-path:inset(0 100% 0 0)} to{clip-path:inset(0 0 0 0)}}
+.fp-lede{margin:-.35rem 0 0; font-size:1rem; line-height:1.5; color:var(--ink-2)}
+
+/* la seconda e la terza */
+.fp-seconds{display:grid; grid-template-columns:1fr 1fr; gap:1.1rem; padding-top:1rem; border-top:1.5px solid var(--ink)}
+.fp-second{display:flex; flex-direction:column; gap:.55rem; background:none; border:0; padding:0; margin:0;
+  color:inherit; font:inherit; text-align:left; cursor:pointer}
+.fp-second img{display:block; width:100%; aspect-ratio:16/9; object-fit:cover; border-radius:2px; background:var(--paper-2)}
+.fp-k{display:flex; align-items:center; gap:.5rem}
+.fp-k .bead{width:22px; height:22px; font-size:.7rem; margin:0}
+.fp-k .chip{background:none; box-shadow:none; padding:0; color:var(--ink-3); font-size:.56rem; letter-spacing:.13em}
+.fp-second h3{font-family:var(--display); font-weight:600; font-size:1.14rem; line-height:1.14; margin:0; text-wrap:pretty}
+
+/* il quadro della giornata */
+.fp-quadro{padding-top:1rem; border-top:1px solid var(--rule)}
+.fp-quadro .eyebrow{display:block; margin-bottom:.5rem}
+.fp-quadro p{margin:0; font-size:1rem; line-height:1.58; color:var(--ink-2)}
+.fp-quadro b{color:var(--ink); font-weight:650}
+.fp-foot{margin:0; padding-top:.2rem}
+
+/* il pannello stretto del Duo in verticale: il sottopancia scende sotto la
+   foto, la seconda e la terza vanno in fila con la foto piccola a sinistra */
+@container (max-width:430px){
+  .fp-chyron{position:static; max-width:none}
+  .fp-title{text-wrap:pretty}
+  .fp-seconds{grid-template-columns:1fr}
+  .fp-second{display:grid; grid-template-columns:112px minmax(0,1fr); grid-template-areas:"img k" "img t"; column-gap:.8rem; row-gap:.35rem; align-items:start}
+  .fp-second img{grid-area:img}
+  .fp-second .fp-k{grid-area:k}
+  .fp-second h3{grid-area:t; font-size:1.04rem}
+  .fp-head{align-items:flex-start}
+}
+
 /* La barra "Chiudi / Prossima notizia" in fondo all'approfondimento e' fatta
    per il telefono, dove la lista non si vede. Nel pannello galleggiava sopra
    il testo, e la prossima notizia si sceglie gia' a sinistra (Mike, 31 ottobre
@@ -3829,6 +3933,9 @@ const Voice = (function(){
      ▶ passa alla voce del telefono (fuori dal tocco iOS la lascerebbe muta).
      lastCancel: quando si e' zittita l'ultima voce, per non ripartire troppo presto. */
   let fileGen = 0, fallback = false, lastCancel = 0, current = null;
+  /* "Ascolta l'edizione": gli approfondimenti uno dopo l'altro, come un
+     giornale radio. queue e' quello che resta da suonare, qpos/qlen il punto. */
+  let queue = [], qpos = 0, qlen = 0;
   const RATES = [1, 1.15, 1.3, .9];
 
   function pickVoice(){
@@ -3920,7 +4027,7 @@ const Voice = (function(){
     const b = ui();
     b.hidden = false;
     document.body.classList.add("has-player");
-    b.querySelector(".what b").textContent = title;
+    b.querySelector(".what b").textContent = (qlen > 1 ? qpos + "/" + qlen + " · " : "") + title;
     let sub;
     if(note) sub = note;
     else if(mode === "file" && audio){
@@ -3953,12 +4060,13 @@ const Voice = (function(){
       ms.setActionHandler("seekbackward", file ? function(){ if(mode === "file" && audio) audio.currentTime = Math.max(0, audio.currentTime - 15); } : null);
       ms.setActionHandler("seekforward", file ? function(){ if(mode === "file" && audio) audio.currentTime = Math.min(audio.duration || 0, audio.currentTime + 15); } : null);
     }catch(e){}
+    try{ ms.setActionHandler("nexttrack", queue.length ? function(){ if(!next()) stop(); } : null); }catch(e){}
   }
   function unsession(){
     if(!("mediaSession" in navigator)) return;
     const ms = navigator.mediaSession;
     try{ ms.metadata = null; ms.playbackState = "none"; }catch(e){}
-    ["play", "pause", "seekbackward", "seekforward"].forEach(function(a){ try{ ms.setActionHandler(a, null); }catch(e){} });
+    ["play", "pause", "seekbackward", "seekforward", "nexttrack"].forEach(function(a){ try{ ms.setActionHandler(a, null); }catch(e){} });
   }
 
   /* zittisce la voce e segna quando: speak() subito dopo un cancel() che ha
@@ -3977,7 +4085,7 @@ const Voice = (function(){
 
   /* ---- la voce del browser ---- */
   function speak(){
-    if(idx >= chunks.length){ stop(); return; }
+    if(idx >= chunks.length){ if(!next()) stop(); return; }
     const my = gen;
     const u = new SpeechSynthesisUtterance(chunks[idx]);
     u.lang = "it-IT"; u.rate = rate;
@@ -4029,7 +4137,7 @@ const Voice = (function(){
       audio.preload = "auto";
       audio.addEventListener("timeupdate", function(){ if(mode === "file") paint(); });
       audio.addEventListener("loadedmetadata", function(){ if(mode === "file") paint(); });
-      audio.addEventListener("ended", function(){ if(mode === "file") stop(); });
+      audio.addEventListener("ended", function(){ if(mode === "file" && !next()) stop(); });
       /* il sistema puo' fermare il file da se' (una chiamata, le cuffie tolte):
          la barra segue l'elemento invece di restare su ❚❚ */
       audio.addEventListener("pause", function(){ if(mode === "file" && playing && !audio.ended){ playing = false; wake(false); paint(); } });
@@ -4058,8 +4166,9 @@ const Voice = (function(){
     wake(true); session(n, brief); paint();
   }
 
-  function play(brief, n){
+  function play(brief, n, inQueue){
     if(!ok) return;
+    if(!inQueue){ queue = []; qpos = qlen = 0; }
     stop(true);
     current = [brief, n];
     title = n.title;
@@ -4067,6 +4176,22 @@ const Voice = (function(){
     /* la copia Artifact non puo' caricare file esterni: li' resta la voce */
     if(url && MODE !== "local"){ playFile(brief, n, url); return; }
     if(tts) playSpeech(brief, n);
+  }
+  /* il prossimo della coda; ogni pezzo che parte conta come ascoltato */
+  function next(){
+    if(!queue.length) return false;
+    const it = queue.shift();
+    qpos++;
+    Sig.bump(key(it[0].date, it[1].id), "a");
+    play(it[0], it[1], true);
+    return true;
+  }
+  function playAll(brief, list){
+    if(!ok || !list.length) return;
+    queue = list.slice(1).map(function(n){ return [brief, n]; });
+    qpos = 1; qlen = list.length;
+    Sig.bump(key(brief.date, list[0].id), "a");
+    play(brief, list[0], true);
   }
   function pause(){
     if(!mode) return;
@@ -4103,7 +4228,7 @@ const Voice = (function(){
     hush();
     wake(false); chunks = []; idx = 0;
     if(close){
-      current = null; unsession();
+      current = null; unsession(); queue = []; qpos = qlen = 0;
       if(bar) bar.hidden = true; document.body.classList.remove("has-player");
     }
   }
@@ -4114,7 +4239,7 @@ const Voice = (function(){
     if(document.hidden && playing) pause();
   });
   window.addEventListener("pagehide", function(){ if(mode === "speech") stop(); });
-  return {ok:ok, play:play, stop:stop};
+  return {ok:ok, play:play, playAll:playAll, stop:stop};
 })();
 
 
@@ -4358,12 +4483,14 @@ function liveDiary(){ return S.diary.filter(function(e){ return !e.deleted_at; }
    chiuso, lo apri, e la ritrovi a destra senza perdere il punto. E il
    contrario: chiudi il telefono e la notizia resta aperta nella lista.
 
-   Il pannello non e' mai vuoto: all'apertura mostra la notizia d'apertura,
-   ma come anteprima — non conta come aperta, ne' per "letta" ne' per il
-   tempo di lettura, finche' non la tocchi tu. */
+   Il pannello non e' mai vuoto: all'apertura, se non stavi leggendo niente,
+   mostra la prima pagina dell'edizione (frontPage, piu' sotto), che non e'
+   una notizia e non conta come lettura. Senza prima pagina — non succede
+   nell'edizione, ma il modulo lo regge — mostra la notizia d'apertura come
+   anteprima, che non conta finche' non la tocchi. */
 const Reader = (function(){
   const MQ = window.matchMedia ? window.matchMedia("(min-width:601px) and (max-width:1039px)") : null;
-  let box = null, pane = null, cur = null;
+  let box = null, pane = null, cur = null, cover = null, front = false;
 
   /* La larghezza della pagina cambia con lo zoom di Safari: al 75% il Duo
      dichiara oltre 1.040 punti e prendeva le colonne del Mac (1 novembre
@@ -4409,6 +4536,29 @@ const Reader = (function(){
     cur = null;
   }
 
+  /* La prima pagina: quello che il pannello mostra quando non stai leggendo
+     niente. Non e' una notizia, quindi non porta pulsanti ne' segnali: il
+     pannello senza .tools non conta come vista ne' come lettura. */
+  function entry(){ return box ? box.querySelector(".fp-entry") : null; }
+  function showFront(){
+    if(!active() || !cover) return;
+    if(cur) restore(false);
+    pane.innerHTML = "";
+    pane.classList.remove("is-open");
+    pane.appendChild(cover());
+    pane.scrollTop = 0;
+    front = true;
+    const e = entry();
+    if(e){ e.classList.add("is-reading"); e.setAttribute("aria-current", "true"); }
+  }
+  function unfront(){
+    if(!front) return;
+    front = false;
+    pane.innerHTML = "";
+    const e = entry();
+    if(e){ e.classList.remove("is-reading"); e.removeAttribute("aria-current"); }
+  }
+
   function show(w, real){
     if(!active() || !w || !w._parts) return;
     if(cur === w){
@@ -4420,6 +4570,7 @@ const Reader = (function(){
       return;
     }
     if(cur) restore(false);
+    unfront();
     const p = w._parts;
     pane.appendChild(w._readerHead());
     pane.appendChild(p.body);
@@ -4465,6 +4616,7 @@ const Reader = (function(){
       target.scrollIntoView({block:"center"});
       return;
     }
+    if(cover){ showFront(); return; }
     const first = list.querySelector(".story");
     if(first) show(first, false);
   }
@@ -4473,14 +4625,16 @@ const Reader = (function(){
   function leave(){
     const r = root();
     if(r) r.classList.remove("duo");
+    unfront();
     if(!cur) return;
     const w = cur, real = pane.classList.contains("is-open");
     restore(real);
     if(real) w.scrollIntoView({block:"start"});
   }
 
-  function mount(b){
-    box = b; pane = b ? b.querySelector(".reader") : null; cur = null;
+  function mount(b, c){
+    box = b; pane = b ? b.querySelector(".reader") : null; cur = null; front = false;
+    cover = c || null;
     last = on();
     if(last) enter(); else { const r = root(); if(r) r.classList.remove("duo"); }
   }
@@ -4514,7 +4668,7 @@ const Reader = (function(){
   window.addEventListener("resize", onResize);
   window.addEventListener("orientationchange", onResize);
 
-  return {active:active, claims:claims, holds:holds, show:show, mount:mount, state:state, top:top, reveal:reveal};
+  return {active:active, claims:claims, holds:holds, show:show, mount:mount, state:state, top:top, reveal:reveal, front:showFront};
 })();
 
 /* ================= vista edizione ================= */
@@ -4556,6 +4710,131 @@ function renderEdition(){
   if(rd && now && now.id === rd.id) Reader.top(rd.top);
   window.scrollTo(0, y);
 }
+/* ================= la prima pagina del Duo =================
+   Quello che si vede aprendo il Duo, prima di toccare qualsiasi cosa (1
+   novembre 2026: Mike, davanti alla vecchia apertura in orizzontale — pallini,
+   data, i tre titoli, l'intro, tutta la prima schermata spesa prima della
+   prima notizia — «non lo accetto»). A sinistra c'e' gia' l'indice dal primo
+   pixel; a destra, finche' non scegli, la prima pagina dell'edizione:
+
+   - la testata del giorno, con «Ascolta l'edizione»: i cinque approfondimenti
+     uno dopo l'altro, come un giornale radio, a schermo bloccato;
+   - la fila dei pallini, uno per notizia: lo stesso colore e lo stesso numero
+     della lista, pieni quelli da leggere e spenti quelli letti — il campo di
+     pallini della sigla, che qui dice quanto ti resta;
+   - l'apertura come in televisione: la foto e sopra il sottopancia, la
+     fascia gialla e il titolo su nero;
+   - la seconda e la terza affiancate, poi il quadro della giornata.
+
+   Ogni tocco apre la notizia accanto, come dalla lista. La pagina si rifa'
+   ogni volta che torni su «Prima pagina», cosi' i pallini letti sono veri. */
+function frontPage(brief, wraps){
+  const news = brief.news || [];
+  const d = new Date(brief.date + "T12:00:00");
+  const fp = el("div", {class:"fp"});
+  const open = function(i){
+    const w = wraps[i];
+    if(!w) return;
+    Sig.bump(key(brief.date, news[i].id), "o");
+    Reader.show(w, true);
+    w.scrollIntoView({block:"nearest"});
+  };
+
+  /* la testata del giorno */
+  const head = el("header", {class:"fp-head"}, [
+    el("div", {class:"fp-when"}, [
+      el("span", {class:"eyebrow", text:isNaN(d) ? "" : GIORNI[d.getDay()] + " · " + (brief.window || "ultime 24 ore")}),
+      el("h2", {class:"fp-date", text:isNaN(d) ? brief.date : d.getDate() + " " + MESI[d.getMonth()]})
+    ])
+  ]);
+  const deeps = news.filter(function(n){ return n.approfondimento; });
+  if(Voice.ok && deeps.length){
+    const secs = deeps.reduce(function(t, n){ const a = n.approfondimento.audio; return t + (a && a.durata ? a.durata : 0); }, 0);
+    const files = deeps.every(function(n){ return n.approfondimento.audio && n.approfondimento.audio.durata; });
+    const sub = deeps.length + (deeps.length === 1 ? " approfondimento" : " approfondimenti") +
+                (files && MODE !== "local" ? " · " + Math.round(secs / 60) + " min" : "");
+    head.appendChild(el("button", {type:"button", class:"fp-listen", onclick:function(ev){
+      ev.stopPropagation(); Voice.playAll(brief, deeps);
+    }}, [
+      el("i", {"aria-hidden":"true", text:"▶"}),
+      el("span", {}, [el("b", {text:"Ascolta l'edizione"}), el("small", {text:sub})])
+    ]));
+  }
+  fp.appendChild(head);
+
+  /* la fila: un pallino per notizia, spento se l'hai letta */
+  const row = el("div", {class:"fp-beads"});
+  let read = 0;
+  news.forEach(function(n, i){
+    const done = !!(wraps[i] && wraps[i].classList.contains("is-read"));
+    if(done) read++;
+    const b = el("button", {type:"button", class:"fp-bead" + (done ? " is-read" : ""),
+      title:n.title, "aria-label":(i + 1) + ". " + n.title + (done ? " (letta)" : ""),
+      onclick:function(ev){ ev.stopPropagation(); open(i); }}, [bead(i, String(i + 1))]);
+    b.style.setProperty("--i", i);
+    row.appendChild(b);
+  });
+  const left = news.length - read;
+  fp.appendChild(el("div", {class:"fp-row"}, [row, el("span", {class:"eyebrow fp-count",
+    text:!read ? news.length + " notizie da leggere" : !left ? "tutte lette" : read + (read === 1 ? " letta, " : " lette, ") + left + " da leggere"})]));
+
+  /* l'apertura: la foto e il sottopancia */
+  const lead = news[0];
+  if(lead){
+    const src = lead.hero || lead.image;
+    const fig = el("figure", {class:"fp-lead" + (src ? "" : " no-img"), onclick:function(){ open(0); }}, [
+      src ? el("img", {src:src, alt:"", decoding:"async"}) : null,
+      el("figcaption", {class:"fp-chyron"}, [
+        el("span", {class:"fp-tag", text:"In apertura" + (lead.tag ? " · " + lead.tag : "")}),
+        el("span", {class:"fp-title", text:lead.title})
+      ])
+    ]);
+    fp.appendChild(fig);
+    if(lead.sintesi) fp.appendChild(el("p", {class:"fp-lede", text:lead.sintesi}));
+  }
+
+  /* la seconda e la terza */
+  const two = news.slice(1, 3);
+  if(two.length){
+    const box = el("div", {class:"fp-seconds"});
+    two.forEach(function(n, j){
+      const i = j + 1;
+      box.appendChild(el("button", {type:"button", class:"fp-second", onclick:function(){ open(i); }}, [
+        n.image ? el("img", {src:n.image, alt:"", loading:"lazy", decoding:"async"}) : null,
+        el("span", {class:"fp-k"}, [bead(i, String(i + 1)), n.tag ? el("span", {class:tagClass(n.tag), text:n.tag}) : null]),
+        el("h3", {text:n.title})
+      ]));
+    });
+    fp.appendChild(box);
+  }
+
+  /* il quadro: la prima frase in nero, come l'attacco di un fondo */
+  if(brief.intro){
+    const m = brief.intro.match(/^(.+?[.!?])\s+(.+)$/);
+    fp.appendChild(el("section", {class:"fp-quadro"}, [
+      el("span", {class:"eyebrow", text:"Il quadro della giornata"}),
+      el("p", {}, m ? [el("b", {text:m[1] + " "}), document.createTextNode(m[2])] : [document.createTextNode(brief.intro)])
+    ]));
+  }
+  const st = brief.stats || {};
+  if(st.articoli_letti){
+    fp.appendChild(el("p", {class:"eyebrow fp-foot",
+      text:st.articoli_letti + " articoli letti · " + (st.notizie_selezionate || news.length) + " scelti"}));
+  }
+  return fp;
+}
+function frontEntry(brief){
+  const d = new Date(brief.date + "T12:00:00");
+  return el("button", {type:"button", class:"fp-entry", onclick:function(){ Reader.front(); }}, [
+    el("span", {class:"fp-mark", "aria-hidden":"true"}, [el("i"), el("i"), el("i"), el("i")]),
+    el("span", {class:"fp-entry-t"}, [
+      el("b", {text:"Prima pagina"}),
+      el("span", {class:"eyebrow", text:(isNaN(d) ? "" : d.getDate() + " " + MESI[d.getMonth()].slice(0, 3) + " · ") +
+        (brief.news || []).length + " notizie"})
+    ])
+  ]);
+}
+
 function drawEdition(root){
   const brief = BRIEFS.filter(function(b){ return b.date === currentDate; })[0] || BRIEFS[0];
   root.innerHTML = "";
@@ -4608,14 +4887,14 @@ function drawEdition(root){
   }
   col.appendChild(hero);
 
-  col.appendChild(el("div", {class:"section-head"}, [
+  col.appendChild(el("div", {class:"section-head news-head"}, [
     el("span", {class:"pip"}), el("h2", {text:"Le notizie"}),
     el("span", {class:"eyebrow hint", text:"tocca un titolo per aprirlo"})
   ]));
   /* le notizie stanno in una scatola con accanto il pannello del Duo: sul
      telefono e sul Mac il pannello non si vede e la lista e' quella di sempre */
-  const newslist = el("div", {class:"newslist"});
-  (brief.news || []).forEach(function(n, i){ newslist.appendChild(storyNode(brief, n, i)); });
+  const newslist = el("div", {class:"newslist"}, [frontEntry(brief)]);
+  const wraps = (brief.news || []).map(function(n, i){ return newslist.appendChild(storyNode(brief, n, i)); });
   const newsbox = el("div", {class:"newsbox"}, [
     newslist, el("article", {class:"reader", "aria-live":"polite"})
   ]);
@@ -4784,7 +5063,7 @@ function drawEdition(root){
      si guarda dal Mac, con lint.py e feedcheck.py. */
 
   root.appendChild(el("div", {class:"columns"}, [col, rail]));
-  Reader.mount(newsbox);
+  Reader.mount(newsbox, function(){ return frontPage(brief, wraps); });
   dotfield(canvas);
 
   const srcs = {};
