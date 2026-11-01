@@ -447,59 +447,72 @@ html.duo-forzato{--gutter:1.25rem}
   display:grid; grid-template-columns:minmax(220px, 36%) minmax(0,1fr);
   column-gap:1.5rem; align-items:start;
 }
-/* La lista e' un indice, non una pila di schede: pallino in colonna, titolo
-   accanto a filo, e sotto una riga di meta silenziosa. Il titolo viene prima
-   perche' e' quello che si scorre; il tag scende a testo con il suo pallino
-   di colore, invece di una scatola ripetuta quindici volte. Sintesi,
-   miniatura e pulsanti stanno nel pannello, dove c'e' spazio per leggerli. */
-#view-oggi.duo .newslist .story{padding:.95rem .25rem .9rem .85rem; cursor:pointer; position:relative}
+/* La lista del Duo, seconda versione (1 novembre 2026). La prima era un
+   indice di numeri colorati e titoli in condensato sottile, con il tag sotto:
+   Mike la trovava piccola, poco leggibile, anonima, e i colori non tornavano
+   — il pallino giallo, il tag rosso, la barra arancione sulla stessa voce.
+   Ora:
+   - i titoli sono nel carattere di sistema, pieno e grande: e' una colonna da
+     scorrere, non una testata;
+   - due sezioni, «In primo piano» (le cinque con l'approfondimento, con la
+     foto) e «In breve»: l'occhio sa subito cosa pesa di piu';
+   - sopra ogni titolo il reparto (Mac, iPhone, Mercato, Regole…): dice che
+     notizia aspettarsi, che e' quello che i numeri e i tag non dicevano;
+   - un colore solo: l'arancione di «sei qui», come la scheda attiva in
+     testata. Il giallo resta ai rumor, perche' e' il suo significato. */
+#view-oggi.duo .newslist .list-sec{display:flex; align-items:center; gap:.6rem;
+  margin:0; padding:1.25rem .25rem .55rem .85rem; font-size:.62rem; font-weight:700;
+  letter-spacing:.18em; text-transform:uppercase; color:var(--ink)}
+#view-oggi.duo .newslist .list-sec::after{content:""; flex:1; height:1.5px; background:var(--ink)}
+#view-oggi.duo .newslist .list-sec + .story{border-top:0}
+#view-oggi.duo .newslist .story{padding:.85rem .25rem .9rem .85rem; cursor:pointer; position:relative}
 #view-oggi.duo .newslist .story-head,
 #view-oggi.duo .newslist .story-head.with-thumb{
-  grid-template-columns:24px minmax(0,1fr);
-  grid-template-areas:"bead title" ". chips";
-  column-gap:.7rem; row-gap:.4rem;
+  grid-template-columns:minmax(0,1fr);
+  grid-template-areas:"kicker" "title";
+  column-gap:.8rem; row-gap:.3rem;
 }
-#view-oggi.duo .newslist .story-head .bead{align-self:start}
-#view-oggi.duo .newslist .bead{width:24px; height:24px; font-size:.74rem; margin-top:.02rem}
+#view-oggi.duo .newslist .story.top .story-head.with-thumb{
+  grid-template-columns:minmax(0,1fr) 64px;
+  grid-template-areas:"kicker thumb" "title thumb";
+}
+#view-oggi.duo .newslist .story-head .bead,
+#view-oggi.duo .newslist .story-head .chips,
 #view-oggi.duo .newslist .story-head .lede,
 #view-oggi.duo .newslist .story-head .thumb,
 #view-oggi.duo .newslist .tools,
 #view-oggi.duo .newslist .workspace{display:none}
-/* il titolo: Medium, non Demi. Il grassetto resta a quella che stai leggendo */
-/* text-wrap:pretty e non balance: in un indice stretto il bilanciamento
-   accorcia le righe e lascia il margine destro frastagliato */
-#view-oggi.duo .newslist .story h3{font-weight:500; font-size:1.07rem; line-height:1.24;
-  letter-spacing:0; margin:0; color:var(--ink); transition:color .15s; text-wrap:pretty}
-#view-oggi.duo .newslist .story.is-read:not(.is-reading) h3{color:var(--ink-2)}
+#view-oggi.duo .newslist .story.top .story-head .thumb{display:block; grid-area:thumb; width:64px; height:64px;
+  margin:.1rem 0 0; border-radius:3px; object-fit:cover; transition:opacity .15s}
+.story-head .kicker{display:none}
+#view-oggi.duo .newslist .story-head .kicker{display:flex; align-items:center; gap:.5rem; grid-area:kicker;
+  font-size:.6rem; font-weight:700; letter-spacing:.15em; text-transform:uppercase; color:var(--ink-3)}
+#view-oggi.duo .newslist .kicker .rumor{color:var(--yellow-ink); display:inline-flex; align-items:center; gap:.3rem}
+#view-oggi.duo .newslist .kicker .rumor::before{content:""; width:7px; height:7px; border-radius:50%; background:var(--yellow)}
+/* il titolo: il carattere di sistema, non il condensato — si legge meglio a
+   questa misura, e il condensato resta alle testate, dove fa il suo lavoro */
+#view-oggi.duo .newslist .story h3{grid-area:title; font-family:var(--body); font-weight:600; font-size:1.02rem;
+  line-height:1.3; letter-spacing:-.006em; margin:0; color:var(--ink); text-wrap:pretty; transition:color .15s}
+#view-oggi.duo .newslist .story:not(.top) h3{font-weight:500; font-size:.96rem; line-height:1.32}
+#view-oggi.duo .newslist .story.is-read:not(.is-reading) h3{color:var(--ink-3)}
+#view-oggi.duo .newslist .story.is-read:not(.is-reading) .thumb{opacity:.45}
 #view-oggi.duo .newslist .story:hover h3{color:var(--ink)}
-/* la riga di meta: maiuscoletto, pallino del colore del tag, niente scatole */
-#view-oggi.duo .newslist .chips{margin:0; gap:.2rem .7rem}
-#view-oggi.duo .newslist .chip{background:none; box-shadow:none; padding:0; color:var(--ink-3);
-  font-size:.56rem; letter-spacing:.13em; display:inline-flex; align-items:center; gap:.38rem}
-#view-oggi.duo .newslist .chip[class*="t-"]::before{content:""; width:7px; height:7px;
-  border-radius:50%; background:var(--tagc, var(--ink-3)); flex:none}
-#view-oggi.duo .newslist .chip.t-rumor{--tagc:var(--yellow)}
-#view-oggi.duo .newslist .chip.t-confermato{--tagc:var(--blue)}
-#view-oggi.duo .newslist .chip.t-dati{--tagc:var(--orange)}
-#view-oggi.duo .newslist .chip.t-analisi,
-#view-oggi.duo .newslist .chip.t-opinione{--tagc:var(--red)}
-#view-oggi.duo .newslist .chip.t-contorno,
-#view-oggi.duo .newslist .chip.t-contesto,
-#view-oggi.duo .newslist .chip.t-servizio{--tagc:var(--ink)}
-/* "approfondita" nella lista e' ridondante — per regola sono le prime cinque —
-   e nella colonna stretta del Duo in verticale mandava la meta su due righe
-   solo per quelle. Nel pannello la pastiglia c'e'. */
-#view-oggi.duo .newslist .chip.deep-mark{display:none}
-#view-oggi.duo .newslist .meter{padding:0}
-/* Quella che stai leggendo si segna come la scheda attiva in testata: la
-   barra arancione di quattro punti, qui in verticale. Niente fondo: in TMB
-   le campiture hanno un ruolo, e "selezionato" non e' fra questi. */
-#view-oggi.duo .newslist .story::before{content:""; position:absolute; left:0; top:.85rem; bottom:.8rem;
+/* quella che stai leggendo: la barra arancione di «sei qui» e il titolo pieno.
+   Niente fondo: in TMB le campiture hanno un ruolo, e «selezionato» non c'e'. */
+#view-oggi.duo .newslist .story::before{content:""; position:absolute; left:0; top:.8rem; bottom:.85rem;
   width:4px; background:var(--orange); transform:scaleY(0); transform-origin:top;
   transition:transform .18s ease}
 #view-oggi.duo .newslist .story.is-reading::before{transform:scaleY(1)}
 #view-oggi.duo .newslist .story.is-reading h3{font-weight:700; color:var(--ink)}
-#view-oggi.duo .newslist .story.is-reading .bead{transform:none; opacity:1}
+#view-oggi.duo .newslist .story.is-reading .kicker{color:var(--orange-ink)}
+.list-sec{display:none}
+/* il Duo in verticale: la colonna e' stretta, e con la foto accanto un titolo
+   andava su sette righe. Li' la foto si toglie e il titolo prende la riga. */
+#view-oggi.duo .newslist{container-type:inline-size}
+@container (max-width:330px){
+  #view-oggi.duo .newslist .story.top .story-head.with-thumb{grid-template-columns:minmax(0,1fr); grid-template-areas:"kicker" "title"}
+  #view-oggi.duo .newslist .story.top .story-head .thumb{display:none}
+}
 
 /* il pannello: resta agganciato sotto la testata e scorre per conto suo */
 #view-oggi.duo .reader{
@@ -511,7 +524,7 @@ html.duo-forzato{--gutter:1.25rem}
 }
 .reader-head{display:flex; flex-direction:column; gap:.6rem; padding-bottom:.2rem}
 .reader-kicker{display:flex; align-items:center; gap:.6rem}
-.reader-kicker .bead{width:26px; height:26px; font-size:.78rem; margin:0}
+.reader-rep{font-size:.66rem; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:var(--orange-ink)}
 .reader-kicker .eyebrow{margin:0}
 .reader-head .chips{margin:0}
 .reader-head h2{font-family:var(--display); font-weight:600; font-size:clamp(1.55rem, 3.4vw, 2.05rem);
@@ -1915,6 +1928,31 @@ function safeUrl(u){
   return /^https?:\/\//i.test(s) ? s : null;
 }
 function tagClass(tag){ return "chip t-" + String(tag || "").toLowerCase().replace(/[^a-z]/g,""); }
+/* Il reparto della notizia: l'argomento in una parola, che nella lista del
+   Duo dice che notizia aspettarsi. Dal 2 novembre 2026 la corsa lo scrive nel
+   campo "reparto"; per le edizioni di prima si ricava da "category", che era
+   testo libero ("iphone duo", "Casa intelligente", "legale"…). */
+const REPARTI = [
+  ["Mac", /^(mac|macbook|imac|chip)/],
+  ["iPhone", /^(iphone|ios$)/],
+  ["iPad", /^ipad/],
+  ["Watch", /watch/],
+  ["Casa", /^(casa|smart home|homepod|homeview)/],
+  ["Servizi", /^(servizi|app store|apple music|apple tv|apple wallet|apple pay|app$)/],
+  ["Software", /^(software|ios|macos|siri)/],
+  ["Mercato", /^(mercat|vendite|cina|catena|manifattura|concorrenza|operatori|retail|apple store)/],
+  ["Regole", /^(regolament|legale|antitrust|privacy|brevetti|sicurezza)/],
+  ["Azienda", /^(azienda|leadership|dirigenza|organizzazione|strategia|acquisizioni)/],
+  ["Eventi", /^(eventi|calendario)/],
+  ["Accessori", /^(accessori|audio|airpods)/],
+  ["AI", /^ai$/]
+];
+function reparto(n){
+  if(n.reparto) return n.reparto;
+  const c = String(n.category || "").trim().toLowerCase();
+  for(let i = 0; i < REPARTI.length; i++) if(REPARTI[i][1].test(c)) return REPARTI[i][0];
+  return "Apple";
+}
 
 /* ================= accesso ================= */
 let AUTH = null;
@@ -4198,7 +4236,9 @@ const Voice = (function(){
 
 function storyNode(brief, n, index){
   const k = key(brief.date, n.id);
-  const wrap = el("article", {class:"story", id:"s-" + n.id});
+  /* top: le prime cinque, quelle con l'approfondimento — nella lista del Duo
+     stanno «In primo piano», con la foto */
+  const wrap = el("article", {class:"story" + (typeof index === "number" && index < 5 ? " top" : ""), id:"s-" + n.id});
   const m0 = mk(k);
   if(m0 && m0.read_at) wrap.classList.add("is-read");
 
@@ -4217,8 +4257,13 @@ function storyNode(brief, n, index){
   if(n.approfondimento) chips.appendChild(el("span", {class:"chip deep-mark", text:"approfondita"}));
   const thread = n.thread ? THREADS[n.thread] : null;
 
+  const kicker = el("span", {class:"kicker"}, [
+    el("span", {text:reparto(n)}),
+    n.tag === "RUMOR" ? el("span", {class:"rumor", text:"rumor"}) : null
+  ]);
   const head = el("div", {class:"story-head"}, [
     bead(typeof index === "number" ? index : 0, String(typeof index === "number" ? index + 1 : (n.rank || 0))),
+    kicker,
     chips,
     el("h3", {text:n.title}),
     el("p", {class:"lede", text:n.sintesi || ""})
@@ -4333,12 +4378,11 @@ function storyNode(brief, n, index){
      si ridisegna, piu' grande, perche' nella lista resta il titolo. */
   wrap._parts = {body:body, bar:null, panel:null};
   wrap._readerHead = function(){
-    /* l'occhiello riprende il pallino della lista: stesso numero, stesso
-       colore, cosi' si vede a colpo d'occhio quale voce e' aperta a destra */
-    const i0 = typeof index === "number" ? index : (n.rank || 1) - 1;
+    /* l'occhiello ripete il reparto della lista, nell'arancione di «sei qui»:
+       si vede a colpo d'occhio quale voce e' aperta a destra */
     return el("header", {class:"reader-head"}, [
       el("div", {class:"reader-kicker"}, [
-        bead(i0, String(i0 + 1)),
+        el("span", {class:"reader-rep", text:reparto(n) + (n.tag === "RUMOR" ? " · rumor" : "")}),
         el("span", {class:"eyebrow", text:fmtDate(brief.date)})
       ]),
       chips.childNodes.length ? chips.cloneNode(true) : null,
@@ -4796,7 +4840,12 @@ function drawEdition(root){
   /* le notizie stanno in una scatola con accanto il pannello del Duo: sul
      telefono e sul Mac il pannello non si vede e la lista e' quella di sempre */
   const newslist = el("div", {class:"newslist"}, [frontEntry(brief)]);
-  const wraps = (brief.news || []).map(function(n, i){ return newslist.appendChild(storyNode(brief, n, i)); });
+  const wraps = (brief.news || []).map(function(n, i){
+    /* le sezioni si vedono solo sul Duo: sul telefono e sul Mac la lista e' quella di sempre */
+    if(i === 0) newslist.appendChild(el("h3", {class:"list-sec", text:"In primo piano"}));
+    if(i === 5) newslist.appendChild(el("h3", {class:"list-sec", text:"In breve"}));
+    return newslist.appendChild(storyNode(brief, n, i));
+  });
   const newsbox = el("div", {class:"newsbox"}, [
     newslist, el("article", {class:"reader", "aria-live":"polite"})
   ]);
