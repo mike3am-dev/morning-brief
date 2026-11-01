@@ -545,17 +545,6 @@ html.duo-forzato{--gutter:1.25rem}
 .fp-when .eyebrow{display:block}
 .fp-date{font-family:var(--display); font-weight:700; text-transform:uppercase;
   font-size:clamp(2.3rem, 10cqi, 3.5rem); line-height:.88; letter-spacing:-.012em; margin:.3rem 0 0}
-.fp-listen{display:inline-flex; align-items:center; gap:.65rem; flex:none;
-  background:var(--yellow); color:#17181B; border:0; border-radius:999px;
-  padding:.45rem 1.1rem .45rem .45rem; font:inherit; text-align:left; cursor:pointer;
-  transition:transform .15s ease}
-.fp-listen:active{transform:scale(.97)}
-.fp-listen i{width:32px; height:32px; border-radius:50%; background:#17181B; color:var(--yellow);
-  display:grid; place-items:center; font-style:normal; font-size:.78rem; padding-left:2px}
-.fp-listen b{display:block; font-family:var(--display); font-weight:700; text-transform:uppercase;
-  font-size:.98rem; letter-spacing:.03em; line-height:1}
-.fp-listen small{display:block; margin-top:.2rem; font-size:.58rem; font-weight:600;
-  letter-spacing:.12em; text-transform:uppercase; opacity:.7}
 
 /* la fila dei pallini: entrano uno dopo l'altro, come nella sigla */
 .fp-row{display:flex; align-items:center; flex-wrap:wrap; gap:.6rem 1rem;
@@ -1198,9 +1187,9 @@ body.has-player .toast{bottom:calc(6.6rem + env(safe-area-inset-bottom))}
 .meter.m-bassa i.on{background:var(--red)}
 .chip.deep-mark{background:none; box-shadow:inset 0 0 0 1.5px var(--yellow); color:var(--yellow-ink)}
 
-/* ---------------- approfondisci e ascolta ---------------- */
+/* ---------------- approfondisci ---------------- */
 .deep-acts{display:flex; flex-wrap:wrap; gap:.5rem; margin:.2rem 0 .1rem}
-.deep-open,.listen-btn{
+.deep-open{
   display:inline-flex; align-items:center; gap:.5rem; border:0; border-radius:999px;
   padding:.5rem 1.05rem; font-family:var(--display); font-weight:700; font-size:.95rem;
   letter-spacing:.04em; text-transform:uppercase; cursor:pointer;
@@ -1208,9 +1197,6 @@ body.has-player .toast{bottom:calc(6.6rem + env(safe-area-inset-bottom))}
 .deep-open{background:var(--yellow); color:#17181B}
 .deep-open i{font-style:normal; transition:transform .2s}
 .deep-open.on i{transform:rotate(180deg)}
-.listen-btn{background:none; color:var(--ink); box-shadow:inset 0 0 0 1.5px var(--ink)}
-.listen-btn i{font-style:normal; font-size:.7rem}
-.listen-btn:hover{background:var(--ink); color:var(--bone)}
 
 .deep{
   margin:.4rem 0 .6rem; padding:1.1rem 0 .4rem; border-top:3px solid var(--ink);
@@ -3933,9 +3919,6 @@ const Voice = (function(){
      ▶ passa alla voce del telefono (fuori dal tocco iOS la lascerebbe muta).
      lastCancel: quando si e' zittita l'ultima voce, per non ripartire troppo presto. */
   let fileGen = 0, fallback = false, lastCancel = 0, current = null;
-  /* "Ascolta l'edizione": gli approfondimenti uno dopo l'altro, come un
-     giornale radio. queue e' quello che resta da suonare, qpos/qlen il punto. */
-  let queue = [], qpos = 0, qlen = 0;
   const RATES = [1, 1.15, 1.3, .9];
 
   function pickVoice(){
@@ -4027,7 +4010,7 @@ const Voice = (function(){
     const b = ui();
     b.hidden = false;
     document.body.classList.add("has-player");
-    b.querySelector(".what b").textContent = (qlen > 1 ? qpos + "/" + qlen + " · " : "") + title;
+    b.querySelector(".what b").textContent = title;
     let sub;
     if(note) sub = note;
     else if(mode === "file" && audio){
@@ -4060,13 +4043,12 @@ const Voice = (function(){
       ms.setActionHandler("seekbackward", file ? function(){ if(mode === "file" && audio) audio.currentTime = Math.max(0, audio.currentTime - 15); } : null);
       ms.setActionHandler("seekforward", file ? function(){ if(mode === "file" && audio) audio.currentTime = Math.min(audio.duration || 0, audio.currentTime + 15); } : null);
     }catch(e){}
-    try{ ms.setActionHandler("nexttrack", queue.length ? function(){ if(!next()) stop(); } : null); }catch(e){}
   }
   function unsession(){
     if(!("mediaSession" in navigator)) return;
     const ms = navigator.mediaSession;
     try{ ms.metadata = null; ms.playbackState = "none"; }catch(e){}
-    ["play", "pause", "seekbackward", "seekforward", "nexttrack"].forEach(function(a){ try{ ms.setActionHandler(a, null); }catch(e){} });
+    ["play", "pause", "seekbackward", "seekforward"].forEach(function(a){ try{ ms.setActionHandler(a, null); }catch(e){} });
   }
 
   /* zittisce la voce e segna quando: speak() subito dopo un cancel() che ha
@@ -4085,7 +4067,7 @@ const Voice = (function(){
 
   /* ---- la voce del browser ---- */
   function speak(){
-    if(idx >= chunks.length){ if(!next()) stop(); return; }
+    if(idx >= chunks.length){ stop(); return; }
     const my = gen;
     const u = new SpeechSynthesisUtterance(chunks[idx]);
     u.lang = "it-IT"; u.rate = rate;
@@ -4137,7 +4119,7 @@ const Voice = (function(){
       audio.preload = "auto";
       audio.addEventListener("timeupdate", function(){ if(mode === "file") paint(); });
       audio.addEventListener("loadedmetadata", function(){ if(mode === "file") paint(); });
-      audio.addEventListener("ended", function(){ if(mode === "file" && !next()) stop(); });
+      audio.addEventListener("ended", function(){ if(mode === "file") stop(); });
       /* il sistema puo' fermare il file da se' (una chiamata, le cuffie tolte):
          la barra segue l'elemento invece di restare su ❚❚ */
       audio.addEventListener("pause", function(){ if(mode === "file" && playing && !audio.ended){ playing = false; wake(false); paint(); } });
@@ -4166,9 +4148,8 @@ const Voice = (function(){
     wake(true); session(n, brief); paint();
   }
 
-  function play(brief, n, inQueue){
+  function play(brief, n){
     if(!ok) return;
-    if(!inQueue){ queue = []; qpos = qlen = 0; }
     stop(true);
     current = [brief, n];
     title = n.title;
@@ -4176,22 +4157,6 @@ const Voice = (function(){
     /* la copia Artifact non puo' caricare file esterni: li' resta la voce */
     if(url && MODE !== "local"){ playFile(brief, n, url); return; }
     if(tts) playSpeech(brief, n);
-  }
-  /* il prossimo della coda; ogni pezzo che parte conta come ascoltato */
-  function next(){
-    if(!queue.length) return false;
-    const it = queue.shift();
-    qpos++;
-    Sig.bump(key(it[0].date, it[1].id), "a");
-    play(it[0], it[1], true);
-    return true;
-  }
-  function playAll(brief, list){
-    if(!ok || !list.length) return;
-    queue = list.slice(1).map(function(n){ return [brief, n]; });
-    qpos = 1; qlen = list.length;
-    Sig.bump(key(brief.date, list[0].id), "a");
-    play(brief, list[0], true);
   }
   function pause(){
     if(!mode) return;
@@ -4228,7 +4193,7 @@ const Voice = (function(){
     hush();
     wake(false); chunks = []; idx = 0;
     if(close){
-      current = null; unsession(); queue = []; qpos = qlen = 0;
+      current = null; unsession();
       if(bar) bar.hidden = true; document.body.classList.remove("has-player");
     }
   }
@@ -4239,7 +4204,7 @@ const Voice = (function(){
     if(document.hidden && playing) pause();
   });
   window.addEventListener("pagehide", function(){ if(mode === "speech") stop(); });
-  return {ok:ok, play:play, playAll:playAll, stop:stop};
+  return {ok:ok, play:play, stop:stop};
 })();
 
 
@@ -4328,14 +4293,9 @@ function storyNode(brief, n, index){
     });
     acts.appendChild(openBtn);
   }
-  const au = n.approfondimento && n.approfondimento.audio;
-  const dur = au && au.durata ? Math.floor(au.durata / 60) + ":" + String(au.durata % 60).padStart(2, "0") : "";
-  const listen = el("button", {type:"button", class:"listen-btn"}, [
-    el("i", {"aria-hidden":"true", text:"▶"}),
-    el("span", {text:deep ? (dur && MODE !== "local" ? "Ascolta · " + dur : "Ascolta l'approfondimento") : "Ascolta"})
-  ]);
-  listen.addEventListener("click", function(ev){ ev.stopPropagation(); Sig.bump(key(brief.date, n.id), "a"); Voice.play(brief, n); });
-  if(Voice.ok) acts.appendChild(listen);
+  /* Ascolta non c'e' piu' (1 novembre 2026: Mike non l'ha mai usato). Voice,
+     piu' su, resta pronto: per riaccenderlo basta un pulsante che chiami
+     Voice.play(brief, n). */
   if(acts.childNodes.length) body.appendChild(acts);
   if(deep) body.appendChild(deep);
   if(n.reliability_note){
@@ -4717,8 +4677,7 @@ function renderEdition(){
    prima notizia — «non lo accetto»). A sinistra c'e' gia' l'indice dal primo
    pixel; a destra, finche' non scegli, la prima pagina dell'edizione:
 
-   - la testata del giorno, con «Ascolta l'edizione»: i cinque approfondimenti
-     uno dopo l'altro, come un giornale radio, a schermo bloccato;
+   - la testata del giorno;
    - la fila dei pallini, uno per notizia: lo stesso colore e lo stesso numero
      della lista, pieni quelli da leggere e spenti quelli letti — il campo di
      pallini della sigla, che qui dice quanto ti resta;
@@ -4747,19 +4706,6 @@ function frontPage(brief, wraps){
       el("h2", {class:"fp-date", text:isNaN(d) ? brief.date : d.getDate() + " " + MESI[d.getMonth()]})
     ])
   ]);
-  const deeps = news.filter(function(n){ return n.approfondimento; });
-  if(Voice.ok && deeps.length){
-    const secs = deeps.reduce(function(t, n){ const a = n.approfondimento.audio; return t + (a && a.durata ? a.durata : 0); }, 0);
-    const files = deeps.every(function(n){ return n.approfondimento.audio && n.approfondimento.audio.durata; });
-    const sub = deeps.length + (deeps.length === 1 ? " approfondimento" : " approfondimenti") +
-                (files && MODE !== "local" ? " · " + Math.round(secs / 60) + " min" : "");
-    head.appendChild(el("button", {type:"button", class:"fp-listen", onclick:function(ev){
-      ev.stopPropagation(); Voice.playAll(brief, deeps);
-    }}, [
-      el("i", {"aria-hidden":"true", text:"▶"}),
-      el("span", {}, [el("b", {text:"Ascolta l'edizione"}), el("small", {text:sub})])
-    ]));
-  }
   fp.appendChild(head);
 
   /* la fila: un pallino per notizia, spento se l'hai letta */
